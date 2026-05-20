@@ -1,0 +1,131 @@
+openapi: 3.0.3
+info:
+  title: SPP Market API
+  version: v1
+  description: OpenAPI contract for market endpoints.
+servers:
+  - url: http://localhost:8080
+paths:
+  /markets/MarketService/v1/GetMarketResourceForecastSetByDay:
+    post:
+      tags:
+        - Market Service
+      operationId: getMarketResourceForecastSetByDay
+      summary: GetMarketResourceForecastSetByDay
+      description: Return market resource forecast set for an operating day.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetMarketResourceForecastSetByDayRequest'
+            examples:
+              sample:
+                value:
+                  assetOwnerName: AEP
+                  operatingDay: '2026-05-19'
+                  externalId: req-12345
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketResourceForecastSetByDayResponse'
+              examples:
+                sample:
+                  value:
+                    assetOwnerName: AEP
+                    resourceForecastSet:
+                      resourceForecast:
+                        - forecastInterval: '2026-05-19T13:25:00Z'
+                          forecastTerm: SHORTTERM
+                          forecastMW: 125.500
+                    externalId: req-12345
+components:
+  schemas:
+    GetMarketResourceForecastSetByDayRequest:
+      type: object
+      required:
+        - assetOwnerName
+        - operatingDay
+      properties:
+        assetOwnerName:
+          type: string
+          description: Asset owner name.
+          minLength: 1
+          maxLength: 64
+          example: AEP
+        operatingDay:
+          type: string
+          format: date
+          description: Operating day in ISO date format.
+          example: '2026-05-19'
+        externalId:
+          type: string
+          description: Client-provided external correlation id.
+          minLength: 1
+          maxLength: 36
+          example: req-12345
+
+    GetMarketResourceForecastSetByDayResponse:
+      type: object
+      required:
+        - assetOwnerName
+        - resourceForecastSet
+      properties:
+        assetOwnerName:
+          type: string
+          description: Asset owner name.
+          minLength: 1
+          maxLength: 64
+          example: AEP
+        resourceForecastSet:
+          $ref: '#/components/schemas/ResourceForecastSet'
+        externalId:
+          type: string
+          description: Client-provided external correlation id.
+          minLength: 1
+          maxLength: 36
+          example: req-12345
+
+    ResourceForecastSet:
+      type: object
+      required:
+        - resourceForecast
+      properties:
+        resourceForecast:
+          type: array
+          description: Collection of resource forecast points.
+          items:
+            $ref: '#/components/schemas/ResourceForecast'
+
+    ResourceForecast:
+      type: object
+      required:
+        - forecastInterval
+        - forecastTerm
+        - forecastMW
+      properties:
+        forecastInterval:
+          type: string
+          format: date-time
+          description: 5-minute forecast interval with timezone.
+          example: '2026-05-19T13:25:00Z'
+        forecastTerm:
+          $ref: '#/components/schemas/ResourceForecastTerm'
+        forecastMW:
+          type: number
+          format: double
+          description: Forecast MW.
+          minimum: 0
+          maximum: 999999999.999
+          example: 125.500
+
+    ResourceForecastTerm:
+      type: string
+      description: Forecast term bucket.
+      enum:
+        - SHORTTERM
+        - MIDTERM
+        - LONGTERM
