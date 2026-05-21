@@ -40,6 +40,8 @@ docker-compose up --build -d
 Then open:
 - http://localhost:8080
 - Swagger UI: http://localhost:8080/swagger-ui.html
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3000 (username: admin / password: admin)
 
 
 ## Useful commands
@@ -65,3 +67,16 @@ This project uses `src/main/resources/static/openapi/api.yaml` as the single API
 During the Maven `generate-sources` phase, the OpenAPI Generator creates Spring API interfaces/controllers and request/response models from that YAML.
 
 Swagger UI is also configured to read the same YAML file (`/openapi/api.yaml`), so the interactive documentation stays aligned with the generated code contract.
+
+## Observability
+
+This project exposes metrics with Spring Boot Actuator and Micrometer at:
+- http://localhost:8080/actuator/prometheus
+
+When running with Docker Compose, the stack includes:
+- `spp-app` (Spring Boot API)
+- `prometheus` (scrapes `spp-app` metrics)
+- `grafana` (pre-provisioned Prometheus data source and dashboard)
+
+The default dashboard is available at http://localhost:3000 under:
+- `SPP / API Overview`

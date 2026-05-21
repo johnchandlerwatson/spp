@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   spp-app:
     build:
@@ -9,4 +7,30 @@ services:
     container_name: spp-demo
     ports:
       - "8080:8080"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: spp-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - spp-app
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: spp-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
     restart: unless-stopped
