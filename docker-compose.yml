@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  spp-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: spp-demo:latest
+    container_name: spp-demo
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
