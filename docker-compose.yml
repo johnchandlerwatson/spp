@@ -7,6 +7,9 @@ services:
     container_name: spp-demo
     ports:
       - "8080:8080"
+      - "5005:5005"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     restart: unless-stopped
 
   prometheus:
