@@ -65,11 +65,6 @@ Docker Compose starts these services:
 - prometheus: scrapes app metrics
 - grafana: provisioned data source + dashboards
 
-Default Grafana dashboard:
-
-- SPP / API Operations
-
-## Dashboard Showcase
 
 Snapshot 1: Operations overview
 
@@ -80,8 +75,6 @@ Overview of API status, request throughput, latency trends, and error ratios.
 Snapshot 2: Diagnostic detail
 
 ![SPP API diagnostics dashboard details](image-1.png)
-
-Drill-down view for status-code trends and endpoint-level hotspot detection.
 
 ## Useful Commands
 
