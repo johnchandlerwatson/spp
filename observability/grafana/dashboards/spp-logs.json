@@ -1,0 +1,188 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "HTTP access log explorer. Use the dropdowns to filter by method, status, endpoint, level, and duration. Click a log row to expand all structured fields. For click-to-filter field search (Kibana Discover equivalent), use the Open in Explore link.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Open in Explore",
+      "tooltip": "Grafana Explore = Kibana Discover: histogram + click any field value to filter",
+      "type": "link",
+      "url": "/explore"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "id": 3,
+      "options": {
+        "code": { "language": "markdown", "showLineNumbers": false, "showMiniMap": false },
+        "content": "Filters scope to **HTTP access logs**. Click any log row to expand all structured fields (request_id, duration_ms, client_ip, …). For full click-to-filter field search, use **Open in Explore** (top right) → select Loki → enter `{job=\"spp-app\"} | json`.",
+        "mode": "markdown"
+      },
+      "pluginVersion": "11.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "loki" },
+      "gridPos": { "h": 22, "w": 24, "x": 0, "y": 2 },
+      "id": 2,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "editorMode": "code",
+          "expr": "{job=\"spp-app\", http_method=~\"$method\", http_status=~\"$status\", http_path=~\"$path\"} | json | level=~\"$log_level\" | duration_ms > $min_duration",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Log Stream",
+      "type": "logs"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["spp", "logs", "loki"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "datasource": { "type": "loki", "uid": "loki" },
+        "definition": "label_values({job=\"spp-app\"}, http_method)",
+        "hide": 0,
+        "includeAll": true,
+        "allValue": ".*",
+        "label": "Method",
+        "multi": true,
+        "name": "method",
+        "options": [],
+        "query": {
+          "label": "http_method",
+          "refId": "StandardVariableQuery",
+          "stream": "{job=\"spp-app\"}",
+          "type": 1
+        },
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "datasource": { "type": "loki", "uid": "loki" },
+        "definition": "label_values({job=\"spp-app\"}, http_status)",
+        "hide": 0,
+        "includeAll": true,
+        "allValue": ".*",
+        "label": "Status",
+        "multi": true,
+        "name": "status",
+        "options": [],
+        "query": {
+          "label": "http_status",
+          "refId": "StandardVariableQuery",
+          "stream": "{job=\"spp-app\"}",
+          "type": 1
+        },
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": { "selected": true, "text": "All", "value": "$__all" },
+        "datasource": { "type": "loki", "uid": "loki" },
+        "definition": "label_values({job=\"spp-app\"}, http_path)",
+        "hide": 0,
+        "includeAll": true,
+        "allValue": ".*",
+        "label": "Endpoint",
+        "multi": true,
+        "name": "path",
+        "options": [],
+        "query": {
+          "label": "http_path",
+          "refId": "StandardVariableQuery",
+          "stream": "{job=\"spp-app\"}",
+          "type": 1
+        },
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": { "selected": true, "text": "All", "value": ".*" },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Level",
+        "name": "log_level",
+        "options": [
+          { "selected": true,  "text": "All",   "value": ".*" },
+          { "selected": false, "text": "INFO",  "value": "INFO" },
+          { "selected": false, "text": "WARN",  "value": "WARN" },
+          { "selected": false, "text": "ERROR", "value": "ERROR" },
+          { "selected": false, "text": "DEBUG", "value": "DEBUG" }
+        ],
+        "query": "All : .*, INFO, WARN, ERROR, DEBUG",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": { "selected": true, "text": "any", "value": "0" },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Min Duration",
+        "name": "min_duration",
+        "options": [
+          { "selected": true,  "text": "any",     "value": "0" },
+          { "selected": false, "text": "> 100 ms", "value": "100" },
+          { "selected": false, "text": "> 500 ms", "value": "500" },
+          { "selected": false, "text": "> 1 s",    "value": "1000" },
+          { "selected": false, "text": "> 2 s",    "value": "2000" }
+        ],
+        "query": "any : 0, > 100 ms : 100, > 500 ms : 500, > 1 s : 1000, > 2 s : 2000",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "SPP / Structured Logs",
+  "uid": "spp-api-logs",
+  "version": 5,
+  "weekStart": ""
+}

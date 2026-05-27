@@ -10,6 +10,8 @@ services:
       - "5005:5005"
     environment:
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    volumes:
+      - app-logs:/var/log/spp
     restart: unless-stopped
 
   prometheus:
@@ -36,4 +38,27 @@ services:
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
       - prometheus
+      - loki
     restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.8
+    container_name: spp-loki
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+
+  alloy:
+    image: grafana/alloy:latest
+    container_name: spp-alloy
+    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    volumes:
+      - ./observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - app-logs:/var/log/spp:ro
+    depends_on:
+      - loki
+      - spp-app
+    restart: unless-stopped
+
+volumes:
+  app-logs:

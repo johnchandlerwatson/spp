@@ -8,3 +8,19 @@ datasources:
     url: http://prometheus:9090
     isDefault: true
     editable: false
+  - name: Loki
+    uid: loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: false
+    jsonData:
+      derivedFields:
+        # Promotes request_id to a clickable search link in log details.
+        # In Explore, clicking the magnifying-glass icon next to request_id
+        # instantly scopes the view to all log lines for that request.
+        - name: request_id
+          matcherType: label
+          matcherRegex: request_id
+          url: '/explore?orgId=1&left={"datasource":"loki","queries":[{"refId":"A","expr":"{job=\"spp-app\"} | json | request_id=\"${__value.raw}\"","queryType":"range"}],"range":{"from":"now-6h","to":"now"}}'
+          urlDisplayLabel: "Trace request"
